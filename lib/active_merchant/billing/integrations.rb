@@ -9,6 +9,9 @@ require 'active_merchant/billing/integrations/gestpay'
 require 'active_merchant/billing/integrations/two_checkout'
 require 'active_merchant/billing/integrations/hi_trust'
 require 'active_merchant/billing/integrations/quickpay'
+require 'active_merchant/billing/integrations/alipay'
+require 'active_merchant/billing/integrations/bill99'
+require 'active_merchant/billing/integrations/tenpay'
 
 # make the bogus gateway be classified correctly by the inflector
 if defined?(ActiveSupport::Inflector)

@@ -84,7 +84,11 @@ module ActiveMerchant #:nodoc:
 
             mapping.each{ |key, field| add_field(field, options[key]) }
           else
-            add_field(mapping, args.last)
+            if args.length > 0
+              add_field(mapping, args.last)
+            else
+              @fields[mapping.to_s]
+            end
           end
         end
       end
