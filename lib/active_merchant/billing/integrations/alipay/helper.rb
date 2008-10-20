@@ -11,7 +11,7 @@ module ActiveMerchant #:nodoc:
 
           mapping :order, 'out_trade_no'
 
-          mapping :seller, :email => 'seller_email'
+          mapping :seller, 'seller_email'
 
           mapping :notify_url, 'notify_url'
           mapping :return_url, 'return_url'
@@ -28,8 +28,10 @@ module ActiveMerchant #:nodoc:
           end
 
           def sign
+            prepare_data = (@fields.sort.collect{|s|s[0]+"="+CGI.unescape(s[1])}).join("&")+KEY
+            puts "prepare_data ::::::::::::::::#{prepare_data}"
             add_field('sign',
-                      Digest::MD5.hexdigest((@fields.sort.collect{|s|s[0]+"="+CGI.unescape(s[1])}).join("&")+KEY)
+                      Digest::MD5.hexdigest(prepare_data)
                      )
             add_field('sign_type', 'MD5')
           end

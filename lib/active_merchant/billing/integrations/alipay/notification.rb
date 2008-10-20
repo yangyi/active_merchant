@@ -7,6 +7,7 @@ module ActiveMerchant #:nodoc:
       module Alipay
         class Notification < ActiveMerchant::Billing::Integrations::Notification
           include Sign
+          NOTIFY_QUERY_URL = 'http://notify.alipay.com/trade/notify_query.do'
 
           def complete?
             if status != "TRADE_FINISHED"
@@ -37,8 +38,8 @@ module ActiveMerchant #:nodoc:
             params['']
           end
 
-          def transaction_id
-            params['']
+          def trade_no
+            params['trade_no']
           end
 
           # When was this payment received by the client.
@@ -51,7 +52,7 @@ module ActiveMerchant #:nodoc:
           end
 
           def receiver_email
-            params['']
+            params['seller_email']
           end
 
           def security_key
@@ -71,6 +72,30 @@ module ActiveMerchant #:nodoc:
           def status
             params['trade_status']
           end
+
+          def notify_id
+            params['notify_id']
+          end
+
+          def acknowledge
+
+            uri = URI.parse(NOTIFY_QUERY_URL)
+            request_path = "#{uri.path}?partner=#{ActiveMerchant::Billing::Integrations::Alipay::ACCOUNT}&notify_id=#{self.notify_id}"
+
+            request = Net::HTTP::Post.new(request_path)
+
+            http = Net::HTTP.new(uri.host, uri.port)
+
+            # http.verify_mode    = OpenSSL::SSL::VERIFY_NONE unless @ssl_strict
+            #     http.use_ssl        = true
+
+            request = http.request(request)
+
+            raise StandardError.new("Faulty alipay result: #{request.body}") unless ["invalid","true", "false"].include?(request.body)
+
+            request.body == "true"
+          end
+
           private
 
           # Take the posted data and move the relevant data into a hash
